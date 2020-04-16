@@ -1,0 +1,200 @@
+#include <iostream>
+#include <malloc.h>
+#include <queue>
+#include<time.h>
+#define NumVertex 1001
+bool visited[NumVertex];
+using namespace std;
+typedef struct node//表节点
+{
+    int adjvex;//索引值
+    node *next;
+}EgdeNode;
+typedef struct//头结点
+{
+    int vertex;
+    EgdeNode *firstedge;
+}VertexNode;
+
+typedef struct//图的邻接表
+{
+    VertexNode vexlist[NumVertex]
+    int n;//节点数
+	int e;//边数
+}AdjGraph;
+void CreateGraph(AdjGraph *G){
+    int i,head,tail;
+	int n;
+    G->n = 1000;
+	G->e = 1000;
+	for( i=0 ; i < G->n ; i++ ){
+        G->vexlist[i].vertex=i ;
+        G->vexlist[i].firstedge = NULL 
+    }
+    for( i=0 ; i < G->e ; i++ ){
+		while(1){
+		n=rand()%1000;
+		if(i!=n)
+			break;                     
+		} //在0-999在随机生成一个节点    ;
+        tail=n;
+		head=i ;
+		  //随机生成边             
+        EgdeNode * p = (EgdeNode *)malloc(sizeof(node));
+        p -> adjvex = head;
+        p -> next = G->vexlist[tail].firstedge;
+        G->vexlist[tail].firstedge = p;
+        EgdeNode * q = (EgdeNode *)malloc(sizeof(node));
+        q -> adjvex = tail;
+        q -> next = G->vexlist[head].firstedge;
+        G->vexlist[head].firstedge = q;
+    }
+}
+void check(AdjGraph *G , int i)
+{
+    queue <int> q;//初始化队列q
+    EgdeNode * p = (EgdeNode *)malloc(sizeof(node));
+    visited[i] = true;
+    q.push(i);//节点i入队
+    while( !q.empty() ){
+        i = q.front();
+        q.pop();
+        p = G->vexlist[i].firstedge;
+        while(p){
+            if( !visited[p->adjvex] ){
+                visited[p->adjvex] = true ;
+                q.push(p->adjvex);
+            }
+            p = p->next;
+        }
+    }
+}
+void Check(AdjGraph *G){
+    int i,j,t;
+    for( i = 0 ; i < G->n ; i++ ){
+        visited[i] = false ;
+    }//所有节点置为未读
+    for ( i= 0 ; i < G->n ; i++ )
+	{
+
+         check(G,0);//广度优先遍历一次图
+		 for(j=0;j<G->n;j++)
+		 {
+			 if(!visited[j])//找到第一个断点在其和0节点之前加一条边
+			 {
+				EgdeNode * p = (EgdeNode *)malloc(sizeof(node));
+				 p -> adjvex = 0;
+				 p -> next = G->vexlist[j].firstedge;
+				 G->vexlist[j].firstedge = p;
+				 EgdeNode * q = (EgdeNode *)malloc(sizeof(node));
+				 q -> adjvex = j;
+				 q -> next = G->vexlist[0].firstedge;
+				 G->vexlist[0].firstedge = q;
+				 break;
+			 }
+		 }
+		  for( t = 0 ; t < G->n ; t++ )
+		  {
+			visited[t] = false ;
+         }
+    }
+}
+void DFS(AdjGraph *G , int i){
+    EgdeNode * p = (EgdeNode *)malloc(sizeof(node));
+    cout << G->vexlist[i].vertex <<" ";
+    visited[i] = true;
+    p = G->vexlist[i].firstedge;
+    while(p){
+        if( !visited[p->adjvex] )  DFS(G,p->adjvex);
+        p = p->next;
+    }
+
+}
+void DFSTraverse(AdjGraph *G){
+   int i;
+    for( i = 0 ; i < G->n ; i++ ){
+        visited[i] = false ;
+    }//所有节点置为未读
+    for ( i= 0 ; i < G->n ; i++ ){
+        if(!visited[i])  DFS(G,i);
+    }
+} 
+
+
+void BFS(AdjGraph *G , int i){
+    queue <int> Q;
+    EgdeNode * p = (EgdeNode *)malloc(sizeof(node));
+    cout << G->vexlist[i].vertex <<" ";//输出节点i的信息
+    visited[i] = true;//遍历过的节点置为已读
+    Q.push(i);
+    while( !Q.empty() ){
+        i = Q.front();
+        Q.pop();
+        p = G->vexlist[i].firstedge;
+        while(p){
+            if( !visited[p->adjvex] ){
+                cout << G->vexlist[p->adjvex].vertex << " ";
+                visited[p->adjvex] = true ;
+                Q.push(p->adjvex);
+            }
+            p = p->next;
+        }
+    }
+}
+void BFSTraverse(AdjGraph *G){
+    int i;
+    for( i = 0 ; i < G->n ; i++ ){
+       visited[i] = false ;
+    }
+    for ( i= 0 ; i < G->n ; i++ )
+	{
+       if(!visited[i]) BFS(G,i);
+}
+}
+void cc(AdjGraph *G , int i){
+    queue <int> Q;
+    EgdeNode * p = (EgdeNode *)malloc(sizeof(node));
+    cout << G->vexlist[i].vertex <<" ";
+    visited[i] = true;
+    Q.push(i);
+    while( !Q.empty() ){
+        i = Q.front();
+        Q.pop();
+        p = G->vexlist[i].firstedge;
+        while(p){
+            if( !visited[p->adjvex] ){
+
+                cout << G->vexlist[p->adjvex].vertex << " ";
+                visited[p->adjvex] = true ;
+                Q.push(p->adjvex);
+            }
+            p = p->next;
+        }
+    }
+}
+void CCTraverse(AdjGraph *G){
+    int i;
+    for( i = 0 ; i < G->n ; i++ ){
+        visited[i] = false ;
+    }
+    for ( i= 0 ; i < G->n ; i++ )
+	{
+       if(!visited[i]) cc(G,i);
+}
+}
+int main()
+{
+    AdjGraph G;
+    CreateGraph(&G);
+	Check(&G);
+    cout<<"深度优先遍历";
+    DFSTraverse(&G);
+    cout<<endl;
+    cout<<"广度优先遍历";
+    BFSTraverse(&G);
+	cout<<endl;
+	cout<<"按层次遍历;
+	CCTraverse(&G);
+	system("pause");
+    return 0;
+}
